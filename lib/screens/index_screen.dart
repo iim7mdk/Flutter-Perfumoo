@@ -15,9 +15,9 @@ class _IndexpageState extends State<Indexpage> {
   int _bottomNavbar = 0;
 
   final List<Widget> _pages = const [
-    PerfumesPage(),   // واجهة 4
-    FavoritesPage(),  // واجهة 5
-    ProfilePage(),    // واجهة 6
+    PerfumesPage(),
+    FavoritesPage(),
+    ProfilePage(),
   ];
 
   String _getTitle(int index) {

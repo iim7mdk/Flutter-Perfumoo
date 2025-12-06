@@ -35,7 +35,6 @@ class _PerfumesPageState extends State<PerfumesPage> {
     });
   }
 
-  // إضافة أو إزالة عطر من المفضلة ثم حفظ التغيير
   Future<void> _toggleFavorite(String perfumeId) async {
 
     setState(() {
@@ -49,7 +48,6 @@ class _PerfumesPageState extends State<PerfumesPage> {
 
 
 
-    // حفظ المصفوفة بعد التعديل
     await PrefService.setFavorites(_favoriteIds);
   }
 
@@ -78,23 +76,25 @@ class _PerfumesPageState extends State<PerfumesPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ListView.builder عشان نبني عنصر لكل عطر
+
+
+
     return ListView.builder(
       itemCount: _perfumes.length,
       itemBuilder: (context, index) {
-        final perfume = _perfumes[index]; // العطر الحالي
+        final perfume = _perfumes[index];
         final isFavorite = _favoriteIds.contains(perfume.id); // هل هو مفضل؟
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           elevation: 3,
           child: ListTile(
-            // عند الضغط على الكرت نعرض تفاصيل العطر
+
+
             onTap: () {
               _showDetails(perfume);
             },
 
-            // صورة العطر على اليسار
             leading: Image.network(
               perfume.image,
               width: 50,
@@ -102,13 +102,10 @@ class _PerfumesPageState extends State<PerfumesPage> {
               fit: BoxFit.cover,
             ),
 
-            // اسم العطر
             title: Text(perfume.name),
 
-            // السعر تحت الاسم
             subtitle: Text('${perfume.price.toStringAsFixed(0)} ريال'),
 
-            // زر المفضلة (قلب)
             trailing: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
