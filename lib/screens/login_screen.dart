@@ -1,64 +1,112 @@
 import 'package:flutter/material.dart';
+
+import 'signup_screen.dart';
+import 'index_screen.dart';
 import '../services/pref_service.dart';
 
-class LoginScreen extends StatefulWidget {
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  var email = TextEditingController();
-  var pass = TextEditingController();
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+
+    final savedEmail = await PrefService.getEmail();
+    final savedPassword = await PrefService.getPassword();
+
+    if (_emailController.text == savedEmail &&
+        _passwordController.text == savedPassword &&
+        _emailController.text.isNotEmpty) {
+      await PrefService.setIsLoggedIn(true);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Indexpage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('بيانات الدخول غير صحيحة')),
+      );
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  void _goToSignUp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignUpPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("تسجيل دخول")),
-      body: Padding(
-        padding: EdgeInsets.all(16),
+      appBar: AppBar(
+        title: const Text('تسجيل الدخول'),
+        backgroundColor: Colors.blueGrey,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              textAlign: TextAlign.right,
-              controller: email,
-              decoration: InputDecoration(labelText: "الإيميل"),
+            const SizedBox(height: 40),
+            const Icon(Icons.local_mall, size: 80, color: Colors.blueGrey),
+            const SizedBox(height: 20),
+            const Text(
+              'متجر العطور',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-
+            const SizedBox(height: 30),
             TextField(
-              textAlign: TextAlign.right,
-              controller: pass,
-              decoration: InputDecoration(labelText: "كلمة المرور"),
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'البريد الإلكتروني',
+                hintText: 'example@gmail.com',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _passwordController,
               obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'كلمة المرور',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
             ),
-
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
             ElevatedButton(
-              child: Text("تسجيل الدخول"),
-              onPressed: () async {
-                await PrefService.saveUser(email.text);
-                Navigator.pushReplacementNamed(context, "/home");
-              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              onPressed: _isLoading ? null : _login,
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text('تسجيل الدخول'),
             ),
-
-            SizedBox(height: 10),
-
-            ElevatedButton(
-              child: Text("الدخول كزائر"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade700),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/home");
-              },
-            ),
-
-            SizedBox(height: 10),
-
+            const SizedBox(height: 10),
             TextButton(
-              child: Text("إنشاء حساب جديد"),
-              onPressed: () {
-                Navigator.pushNamed(context, "/signup");
-              },
+              onPressed: _goToSignUp,
+              child: const Text('إنشاء حساب جديد'),
             ),
           ],
         ),
